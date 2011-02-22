@@ -1,6 +1,10 @@
 jQuery XML Helper
 -----------------
 
+**Requirements**
+
+ - jQuery 1.5
+
 This small plugin will make parsing **and** manipulating XML strings/documents in IE
 much easier and work correctly.
 
