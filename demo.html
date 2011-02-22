@@ -17,6 +17,8 @@
                 '\t</CoolBrowsers>\n' +
                 '\t<UncoolBrowsers>\n' +
                     '\t\t<Browser name="IE6" />\n' +
+                    '\t\t<Browser><![CDATA[Netscape]]></Browser>\n' +
+                    '\t\t<html><![CDATA[BlackBerry]]></html>\n' +
                 '\t</UncoolBrowsers>\n' +
             '</Browsers>';
 
@@ -43,7 +45,7 @@
             $xml.find("browser[name='Lynx']").appendTo($xml.find("coolbrowsers"));
             
             // Use .outerXml() to get the outer XML
-            $("#result").text($xml.outerXml());            
+            $("#result").text($xml.outerXml());           
         });
     </script>
 </head>

@@ -52,7 +52,7 @@ $.xml = function (xml) {
             rselfClosing = /^(?:area|br|col|embed|hr|img|input|link|meta|param)$/i,
             fcloseTag = function (all, front, tag) {
                 return rselfClosing.test(tag) ? all : front + '></' + tag + '>';
-            };
+            };             
 
         return function (html, returnFrag) {
             if (!div) {
@@ -61,15 +61,15 @@ $.xml = function (xml) {
                 /*@cc_on div.style.display = 'none';@*/
             }
 
-            html = html.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-
+            html = html.replace(/^\s\s*/, '').replace(/\s\s*$/, '');            
+            
             var tabled = html.match(inaTable), myDiv = div.cloneNode(true);
             if (tabled) {
                 html = '<table>' + html + '</table>';
             }
 
             /*@cc_on document.body.appendChild(myDiv);@*/
-            myDiv.innerHTML = html.replace(remptyTag, fcloseTag);
+            myDiv.innerHTML = html.replace(remptyTag, fcloseTag);            
             /*@cc_on document.body.removeChild(myDiv);@*/
 
             if (tabled) {
@@ -86,7 +86,28 @@ $.xml = function (xml) {
             return myFrag;
         };
     }());
-
+    
+    //
+    // Clean
+    //
+    
+    function htmlEncode(value) {    
+        return $('<div/>').text(value).html();  
+    }  
+    
+    //
+    // Handle CDATA
+    // Since this is being converted to HTML, can't use CDATA
+    // but at least we can encode it
+    //
+    xml = xml.replace(/<!\[CDATA\[(.*?)\]\]>/g, htmlEncode('$1'));
+    
+    // Replace IE problematic tags
+    // and use custom namespace
+    /*@cc_on
+    xml = xml.replace(/<(\/)?(title|head|meta|link|body|html)/g, "<$1jxml:$2");
+    @*/
+    
     //
     // Register and discover XML tags (IE only)
     //            
@@ -100,11 +121,11 @@ $.xml = function (xml) {
     }
 
     $.each(tags.unique(), function () { 
-        document.createElement(this); 
+        document.createElement(this);
     });
-    @*/
+    @*/   
 
-    return this(window.innerShiv(xml, false));
+    return $(window.innerShiv(xml, false));
 };
 
 $.fn.outerXml = function () {
@@ -115,7 +136,8 @@ $.fn.outerXml = function () {
     var plainXml = $("<div></div>").append($(this).clone()).html();
 
     if ($.browser.msie) {
-        return plainXml.replace(/<(\/)?\:/g, "<$1");
+        // Replace empty namespaces (:) or jxml: namespace
+        return plainXml.replace(/<(\/)?(jxml)?\:/g, "<$1");
     } else {
         return plainXml;
     }
