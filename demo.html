@@ -41,7 +41,7 @@
             $xml.find("uncoolbrowsers").append($.xml("<browser name='IE8'/><browser name='IE5.5'/><browser name='Lynx'/>"));
             
             // So does finding, etc.
-            $xml.find("browser[name^='IE']").attr("miracle", true);
+            $xml.find("browser[name^='IE']").attr("id", 0);
             $xml.find("browser[name='Lynx']").appendTo($xml.find("coolbrowsers"));
             
             // Use .outerXml() to get the outer XML

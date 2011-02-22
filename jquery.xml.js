@@ -102,10 +102,10 @@ $.xml = function (xml) {
     //
     xml = xml.replace(/<!\[CDATA\[(.*?)\]\]>/g, htmlEncode('$1'));
     
-    // Replace IE problematic tags
-    // and use custom namespace
+    // Replace IE problematic tags and attributes
+    // and use custom namespace or enclose in quotes
     /*@cc_on
-    xml = xml.replace(/<(\/)?(title|head|meta|link|body|html)/g, "<$1jxml:$2");
+    xml = xml.replace(/<(\/)?(title|head|meta|link|body|html)/g, "<$1jxml:$2");    
     @*/
     
     //
@@ -136,8 +136,14 @@ $.fn.outerXml = function () {
     var plainXml = $("<div></div>").append($(this).clone()).html();
 
     if ($.browser.msie) {
+        
+        // Enclose weird IE-specific attributes in quotes
+        plainXml = plainXml.replace(/(id)=(\d+)/gi, '$1="$2"');
+        
         // Replace empty namespaces (:) or jxml: namespace
-        return plainXml.replace(/<(\/)?(jxml)?\:/g, "<$1");
+        plainXml = plainXml.replace(/<(\/)?(jxml)?\:/g, "<$1");
+        
+        return plainXml;
     } else {
         return plainXml;
     }
