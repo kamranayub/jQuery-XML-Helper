@@ -98,14 +98,60 @@ $.xml = function (xml) {
     //
     // Handle CDATA
     // Since this is being converted to HTML, can't use CDATA
-    // but at least we can encode it
+    // but at least we can encode it (for IE, Gecko, etc.)
     //
     xml = xml.replace(/<!\[CDATA\[(.*?)\]\]>/g, htmlEncode('$1'));
     
     // Replace IE problematic tags and attributes
-    // and use custom namespace or enclose in quotes
+    // and use custom namespace
     /*@cc_on
-    xml = xml.replace(/<(\/)?(title|head|meta|link|body|html)/g, "<$1jxml:$2");    
+    var tagsToNs = ["title","head","meta","link","body","html"];
+    var attrToNs = ["disabled", "selected"];
+    var parser = new ActiveXObject('Msxml2.DOMDocument.6.0');
+    parser.async = "false";
+    parser.loadXML(xml);
+    
+    // Iterate through problematic tags and replace
+    $.each(tagsToNs, function () {
+        var tag = this;
+        $.each(parser.getElementsByTagName(tag), function () {
+            var newNode = parser.createElement("jxml:" + tag), i;
+            
+            // Copy attributes and contents
+            for (i = 0; i < this.attributes.length; i++) {
+                newNode.setAttribute(this.attributes[i].name, this.attributes[i].value);
+            }
+            for (i = 0; i < this.childNodes.length; i++) {
+                newNode.appendChild(this.childNodes[i]);
+            }
+            
+            // Append
+            this.parentNode.insertBefore(newNode, this);
+            
+            // Remove
+            this.parentNode.removeChild(this);
+        });
+    });
+    
+    // Iterate through problematic attributes and replace
+    $.each(attrToNs, function () {
+        var attr = this;
+        
+        var nodes = parser.selectNodes("//*[@" + attr + "]");
+        
+        $.each(nodes, function () {            
+            var selectedAttr = this.selectNodes("@" + attr);
+            
+            // Create new attribute
+            this.setAttribute("jxml:" + attr, selectedAttr[0].value);
+            
+            // Remove old attribute
+            this.removeAttribute(attr);
+        });
+    });
+    
+    // Back to business
+    xml = parser.xml;
     @*/
     
     //
@@ -141,7 +187,7 @@ $.fn.outerXml = function () {
         plainXml = plainXml.replace(/(id)=(\w+)/gi, '$1="$2"');
         
         // Replace empty namespaces (:) or jxml: namespace
-        plainXml = plainXml.replace(/<(\/)?(jxml)?\:/g, "<$1");
+        plainXml = plainXml.replace(/<:/g, "<").replace(/(jxml:)/g, "").replace(/<\/:/g, "</");
         
         return plainXml;
     } else {
