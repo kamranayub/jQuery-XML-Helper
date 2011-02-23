@@ -113,7 +113,7 @@ $.xml = function (xml) {
     //            
 
     /*@cc_on
-    var tagRx = /\<([a-z]+)/ig, // match opening tag only
+    var tagRx = /\<([a-z_]+)/ig, // match opening tag only
         tmp, tags = [];
 
     while ((tmp = tagRx.exec(xml)) !== null) {
@@ -138,7 +138,7 @@ $.fn.outerXml = function () {
     if ($.browser.msie) {
         
         // Enclose weird IE-specific attributes in quotes
-        plainXml = plainXml.replace(/(id)=(\d+)/gi, '$1="$2"');
+        plainXml = plainXml.replace(/(id)=(\w+)/gi, '$1="$2"');
         
         // Replace empty namespaces (:) or jxml: namespace
         plainXml = plainXml.replace(/<(\/)?(jxml)?\:/g, "<$1");
