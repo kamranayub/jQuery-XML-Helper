@@ -76,6 +76,15 @@ $.xml = function (xml) {
 		}
 	};
     
+    $$.fn.before = function () {
+        if (typeof arguments[0] === "string") {
+            arguments[0] = $.xml(arguments[0]);
+            return $.fn.before.apply(this, arguments);
+        } else {
+            return $.fn.before.apply(this, arguments);
+        }
+    };
+    
     $$.fn.text = function () {
         var text = arguments[0],
             curDOM = this[0],
