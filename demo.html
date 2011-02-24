@@ -34,16 +34,23 @@
             // Source
             $("#xml").text(xml);
             
-            // Manipulating attributes
+            // Manipulating attributes/CDATA
             console.log(uncoolBrowserNested);
             uncoolBrowserNested.attr("manipulated", true);
             
-            // Appending works (using plain strings too!)
+            // Change CDATA
+            uncoolBrowserNested.cdata("Foo");
+            uncoolBrowserNested.cdata("<strong>Foo2</strong>");
+            // or just append plain text
+            uncoolBrowserNested.append("Some plaintext");
+            
+            // Append new XML
             $xml.find("UncoolBrowsers").append(uncoolBrowser);
             $xml.find("UncoolBrowsers").append(uncoolBrowserNested);
             $xml.find("UncoolBrowsers").append("<Browser name='IE8'/><Browser name='IE5.5'/><Browser name='Lynx'/>");
             
-            // So does finding, etc.
+            // Use jQuery find like normal
+            // and change attributes
             $xml.find("Browser[name^='IE']").attr("id", 0);
             $xml.find("Browser[name='Lynx']").appendTo($xml.find("CoolBrowsers"));
 			$xml.find("Browser[disabled]").attr("disabled", false);
@@ -53,7 +60,8 @@
             
             // Use .outerXml() to get the outer XML
             $("#result").text($xml.xml());   
-			$("#result").append("\nCDATA: " + $xml.find("html").text());
+			$("#result").append("\nCDATA (Plaintext): " + $xml.find("html").text());
+            $("#result").append("\nCDATA (HTML): " + $xml.find("Browser[name='IE9']").html());
         });
     </script>
 </head>

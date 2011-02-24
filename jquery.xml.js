@@ -75,12 +75,65 @@ $.xml = function (xml) {
 			return $.fn.append.apply(this, arguments);
 		}
 	};
+    
+    $$.fn.text = function () {
+        var text = arguments[0];
+        var curDOM = this[0];
+        
+        if (text) {            
+            var textNode = curDOM.ownerDocument.createTextNode(text);
+            
+            curDOM.selectNodes("*").removeAll();
+            curDOM.appendChild(textNode);
+            
+        } else {
+            return $.fn.text.apply(this, arguments);
+        }
+    };
+    
+    $$.fn.cdata = function (data) {
+        var curDOM = this[0], i, node;
+        
+        // Set CDATA
+        if (data) {
+            var cdata = curDOM.ownerDocument.createCDATASection(data);
+            
+            // Remove existing CDATA, if any.
+            for (i = 0; i < curDOM.childNodes.length; i++) {
+                node = curDOM.childNodes[i];
+                if (node.nodeType === 4) { // cdata
+                    node.parentNode.removeChild(node);
+                    break;
+                }
+            }
+            
+            curDOM.appendChild(cdata);
+        } else {
+            // Get CDATA
+            for (i = 0; i < curDOM.childNodes.length; i++) {
+                if (curDOM.childNodes[i].nodeType === 4) { // cdata
+                    return curDOM.childNodes[i].text;
+                }
+            }
+        }
+        
+        return null;
+    };
+    
+    $$.fn.html = function () {
+        // Redirect HTML w/ no args to .cdata()
+        if (!arguments[0]) {
+            return this.cdata();
+        } else {
+            return $.fn.html.apply(this, arguments);
+        }
+    };
 	
 	$$.fn.xml = function () {
 		/// <summary>
 		/// Gets outer XML. Expects $-wrapped XMLDOM.
 		/// </summary>
-
+        
 		// for IE 
 		if (window.ActiveXObject) {
 			return this[0].xml;
