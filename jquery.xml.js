@@ -77,11 +77,12 @@ $.xml = function (xml) {
 	};
     
     $$.fn.text = function () {
-        var text = arguments[0];
-        var curDOM = this[0];
+        var text = arguments[0],
+            curDOM = this[0],
+            textNode;
         
         if (text) {            
-            var textNode = curDOM.ownerDocument.createTextNode(text);
+            textNode = curDOM.ownerDocument.createTextNode(text);
             
             curDOM.selectNodes("*").removeAll();
             curDOM.appendChild(textNode);
@@ -92,11 +93,11 @@ $.xml = function (xml) {
     };
     
     $$.fn.cdata = function (data) {
-        var curDOM = this[0], i, node;
+        var curDOM = this[0], i, node, cdata;
         
         // Set CDATA
         if (data) {
-            var cdata = curDOM.ownerDocument.createCDATASection(data);
+            cdata = curDOM.ownerDocument.createCDATASection(data);
             
             // Remove existing CDATA, if any.
             for (i = 0; i < curDOM.childNodes.length; i++) {
