@@ -9,6 +9,8 @@
  *
  *
  */
+ var $$ = $.sub();
+ 
 $.xml = function (xml) {
     /// <summary>
     /// Makes working with XML a little more
@@ -17,9 +19,7 @@ $.xml = function (xml) {
     /// </summary>
 
     "use strict";    
-    
-    var $$ = $.sub();
-				
+    	
 	$$.parseXML = function (data, xml, tmp) {
 		// Slightly modified to use
 		// ActiveX for IE9 as well (reversed
@@ -40,7 +40,6 @@ $.xml = function (xml) {
 		}
 
 		return xml;
-
 	};
 	
 	$$.fn.append = function () {
@@ -50,16 +49,19 @@ $.xml = function (xml) {
 		
 		if (this[0] !== null && $.find.isXML(this[0])) {
 			// XMLDOM?			
-			if ($.find.isXML(target)) {			
-				nodes = target.childNodes;	
+			if ($.find.isXML(target)) {		
+                //console.log("Appending XMLDOM", target);
+				nodes = target.childNodes;
 			// $-wrapped XML?
 			} else if (target instanceof $ && $.find.isXML(target[0])) {
-				nodes = target[0].childNodes;
+                //console.log("Appending $XML", target);
+				nodes = target;
 			// String?
 			} else if (typeof target === "string") {
+                //console.log("Appending string");
 				// Wrap in case multiple elements were requested
 				nodes = $$.parseXML("<jxmlroot>" + target + "</jxmlroot>").firstChild.childNodes;
-			}
+            }
 			
 			// Nodes get removed from array when moved
 			numNodes = nodes.length;
@@ -87,6 +89,10 @@ $.xml = function (xml) {
 		   return (new XMLSerializer()).serializeToString(this[0]);
 		}
 	};
-
-    return $$($$.parseXML(xml));
+    
+    // Wrap in root tag so when creating new standalone markup, things
+    // should still work.
+    var parser = $$.parseXML("<jxmlroot>" + xml + "</jxmlroot>");
+    
+    return $$(parser).find("jxmlroot > *");
 };

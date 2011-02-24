@@ -28,13 +28,19 @@
                 // use .xml(string) to load XML for jQuery
             var $xml = $.xml(xml),
                 // Use .xml(string) also to create elements for jQuery
-                uncoolBrowser = $.xml('<Browser name="IE7" />');
+                uncoolBrowser = $.xml('<Browser name="IE7" />'),
+                uncoolBrowserNested = $.xml('<Browser name="IE9"><Extra/></Browser>');
             
             // Source
             $("#xml").text(xml);
             
+            // Manipulating attributes
+            console.log(uncoolBrowserNested);
+            uncoolBrowserNested.attr("manipulated", true);
+            
             // Appending works (using plain strings too!)
             $xml.find("UncoolBrowsers").append(uncoolBrowser);
+            $xml.find("UncoolBrowsers").append(uncoolBrowserNested);
             $xml.find("UncoolBrowsers").append("<Browser name='IE8'/><Browser name='IE5.5'/><Browser name='Lynx'/>");
             
             // So does finding, etc.
