@@ -58,7 +58,7 @@
 			// Removing
 			$xml.find("Browser[name='Opera']").remove();
             
-            // Use .outerXml() to get the outer XML
+            // Use .xml() to get the outer XML
             $("#result").text($xml.xml());   
 			$("#result").append("\nCDATA (Plaintext): " + $xml.find("html").text());
             $("#result").append("\nCDATA (HTML): " + $xml.find("Browser[name='IE9']").html());

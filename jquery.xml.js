@@ -112,7 +112,7 @@ $.xml = function (xml) {
             // Get CDATA
             for (i = 0; i < curDOM.childNodes.length; i++) {
                 if (curDOM.childNodes[i].nodeType === 4) { // cdata
-                    return curDOM.childNodes[i].text;
+                    return curDOM.childNodes[i].nodeValue;
                 }
             }
         }
