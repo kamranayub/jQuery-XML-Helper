@@ -129,6 +129,8 @@ $.xml = function (xml) {
 			} else {
 				curDOM.appendChild(cdata);
 			}
+            
+            return this;
         } else {
             // Get CDATA
             for (i = 0; i < curDOM.childNodes.length; i++) {
