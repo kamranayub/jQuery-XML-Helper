@@ -8,7 +8,7 @@ jQuery XML Helper
 This small plugin will make parsing **and** manipulating XML strings/documents in browsers
 much easier and work correctly.
 
-The problem with using vanilla jQuery to manipulate an XML string in IE
+The problem with using vanilla jQuery to manipulate an XML string in browsers
 is that jQuery isn't quite meant for using the XML DOM to append elements.
 
 To get around this, this plugin wraps your XML string inside of the appropriate XMLDOM
@@ -31,10 +31,15 @@ As you can see, you can use all the same jQuery methods as it is a proper jQuery
 Known Issues
 ----------
 
- - Webkit-based browsers bug, doesn't append new nodes
+ - None
 
 Untested
 --------
 
  - Complicated XML documents with namespaces (Could use xmlns jQuery plugin?)
- - Every manipulation method (after, before, insert*, etc.).
+ - Methods:
+   - prepend, prependTo
+   - clone
+   - empty, removeAll
+   - replaceWith, replaceAll
+   - wrap, wrapAll, wrapInner

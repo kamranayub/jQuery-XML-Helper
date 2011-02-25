@@ -50,24 +50,24 @@ $.xml = function (xml) {
 		if (this[0] !== null && $.find.isXML(this[0])) {
 			// XMLDOM?			
 			if ($.find.isXML(target)) {		
-                //console.log("Appending XMLDOM", target);
 				nodes = target.childNodes;
 			// $-wrapped XML?
 			} else if (target instanceof $ && $.find.isXML(target[0])) {
-                //console.log("Appending $XML", target);
 				nodes = target;
 			// String?
 			} else if (typeof target === "string") {
-                //console.log("Appending string");
 				// Wrap in case multiple elements were requested
 				nodes = $$.parseXML("<jxmlroot>" + target + "</jxmlroot>").firstChild.childNodes;
             }
 			
 			// Nodes get removed from array when moved
-			numNodes = nodes.length;
+			numNodes = nodes.length;			
 			for (i = 0; i < numNodes; i++) {
-				//console.log(this[0], nodes[0]);
-				this[0].appendChild(nodes[0]);
+				if ($.browser.webkit) {					
+					this[0].appendChild(this[0].ownerDocument.importNode(nodes[i], true));
+				} else {
+					this[0].appendChild(nodes[0]);
+				}
 			}
 			
 			return this;
@@ -78,7 +78,14 @@ $.xml = function (xml) {
     
     $$.fn.before = function () {
         if (typeof arguments[0] === "string") {
-            arguments[0] = $.xml(arguments[0]);
+			if ($.browser.webkit) {
+				arguments[0] = this[0].ownerDocument.importNode(
+					$$.parseXML("<jxmlroot>" + arguments[0] + "</jxmlroot>"
+				).firstChild, true).childNodes;
+			} else {
+				arguments[0] = $.xml(arguments[0]);
+			}
+			
             return $.fn.before.apply(this, arguments);
         } else {
             return $.fn.before.apply(this, arguments);
@@ -103,9 +110,9 @@ $.xml = function (xml) {
     
     $$.fn.cdata = function (data) {
         var curDOM = this[0], i, node, cdata;
-        
+		
         // Set CDATA
-        if (data) {
+        if (data) {			
             cdata = curDOM.ownerDocument.createCDATASection(data);
             
             // Remove existing CDATA, if any.
@@ -117,7 +124,11 @@ $.xml = function (xml) {
                 }
             }
             
-            curDOM.appendChild(cdata);
+			if ($.browser.webkit) {
+				curDOM.appendChild(curDOM.ownerDocument.importNode(cdata, true));
+			} else {
+				curDOM.appendChild(cdata);
+			}
         } else {
             // Get CDATA
             for (i = 0; i < curDOM.childNodes.length; i++) {
@@ -157,5 +168,5 @@ $.xml = function (xml) {
     // should still work.
     var parser = $$.parseXML("<jxmlroot>" + xml + "</jxmlroot>");
     
-    return $$(parser).find("jxmlroot > *");
+	return $$(parser).find("jxmlroot > *");
 };
