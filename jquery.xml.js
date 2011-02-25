@@ -45,35 +45,45 @@ $.xml = function (xml) {
 	$$.fn.append = function () {
 		var target = arguments[0],
 			nodes = [],
-			numNodes;
+			numNodes,
+            curDOM,
+            fallback = false;
 		
-		if (this[0] !== null && $.find.isXML(this[0])) {
-			// XMLDOM?			
-			if ($.find.isXML(target)) {		
-				nodes = target.childNodes;
-			// $-wrapped XML?
-			} else if (target instanceof $ && $.find.isXML(target[0])) {
-				nodes = target;
-			// String?
-			} else if (typeof target === "string") {
-				// Wrap in case multiple elements were requested
-				nodes = $$.parseXML("<jxmlroot>" + target + "</jxmlroot>").firstChild.childNodes;
+        this.each(function () {
+            curDOM = this;
+            
+            if (curDOM !== null && $.find.isXML(curDOM)) {
+                // XMLDOM?			
+                if ($.find.isXML(target)) {		
+                    nodes = target.childNodes;
+                // $-wrapped XML?
+                } else if (target instanceof $ && $.find.isXML(target[0])) {
+                    nodes = target;
+                // String?
+                } else if (typeof target === "string") {
+                    // Wrap in case multiple elements were requested
+                    nodes = $$.parseXML("<jxmlroot>" + target + "</jxmlroot>").firstChild.childNodes;
+                }
+                
+                // Nodes get removed from array when moved
+                numNodes = nodes.length;			
+                for (i = 0; i < numNodes; i++) {
+                    if ($.browser.webkit) {					
+                        curDOM.appendChild(curDOM.ownerDocument.importNode(nodes[i], true));
+                    } else {
+                        curDOM.appendChild(nodes[0]);
+                    }
+                }                                	
+            } else {
+                fallback = true;
             }
-			
-			// Nodes get removed from array when moved
-			numNodes = nodes.length;			
-			for (i = 0; i < numNodes; i++) {
-				if ($.browser.webkit) {					
-					this[0].appendChild(this[0].ownerDocument.importNode(nodes[i], true));
-				} else {
-					this[0].appendChild(nodes[0]);
-				}
-			}
-			
-			return this;
-		} else {
-			return $.fn.append.apply(this, arguments);
-		}
+        });
+        
+        if (fallback === true) {
+            return $.fn.append.apply(this, arguments);
+        } else {
+            return this;
+        }
 	};
     
     $$.fn.before = function () {
@@ -94,45 +104,67 @@ $.xml = function (xml) {
     
     $$.fn.text = function () {
         var text = arguments[0],
-            curDOM = this[0],
-            textNode;
+            curDOM,
+            textNode, i, 
+            curNodes, curNodeLength, node;
         
-        if (text) {            
-            textNode = curDOM.ownerDocument.createTextNode(text);
+        if (text) {
+            this.each(function () {
+                curDOM = this;
+                
+                textNode = curDOM.ownerDocument.createTextNode(text);
+
+                curNodes = curDOM.childNodes;
+                curNodeLength = curNodes.length;
+                
+                // Remove all nodes as we're setting the value of the node to
+                // a text node
+                for (i = 0; i < curNodeLength; i++) {
+                    node = curNodes[0];
+                    
+                    node.parentNode.removeChild(node);
+                }
+                
+                curDOM.appendChild(textNode);               
+            });
             
-            curDOM.selectNodes("*").removeAll();
-            curDOM.appendChild(textNode);
-            
+            return this;
         } else {
             return $.fn.text.apply(this, arguments);
-        }
+        }                             
     };
     
     $$.fn.cdata = function (data) {
-        var curDOM = this[0], i, node, cdata;
+        var curDOM, i, node, cdata;
 		
         // Set CDATA
-        if (data) {			
-            cdata = curDOM.ownerDocument.createCDATASection(data);
-            
-            // Remove existing CDATA, if any.
-            for (i = 0; i < curDOM.childNodes.length; i++) {
-                node = curDOM.childNodes[i];
-                if (node.nodeType === 4) { // cdata
-                    node.parentNode.removeChild(node);
-                    break;
+        if (data) {	
+            this.each(function () {
+                curDOM = this;
+                
+                cdata = curDOM.ownerDocument.createCDATASection(data);
+                
+                // Remove existing CDATA, if any.
+                for (i = 0; i < curDOM.childNodes.length; i++) {
+                    node = curDOM.childNodes[i];
+                    if (node.nodeType === 4) { // cdata
+                        node.parentNode.removeChild(node);
+                        break;
+                    }
                 }
-            }
+                
+                if ($.browser.webkit) {
+                    curDOM.appendChild(curDOM.ownerDocument.importNode(cdata, true));
+                } else {
+                    curDOM.appendChild(cdata);
+                }
             
-			if ($.browser.webkit) {
-				curDOM.appendChild(curDOM.ownerDocument.importNode(cdata, true));
-			} else {
-				curDOM.appendChild(cdata);
-			}
+            });
             
             return this;
         } else {
             // Get CDATA
+            curDOM = this[0];
             for (i = 0; i < curDOM.childNodes.length; i++) {
                 if (curDOM.childNodes[i].nodeType === 4) { // cdata
                     return curDOM.childNodes[i].nodeValue;

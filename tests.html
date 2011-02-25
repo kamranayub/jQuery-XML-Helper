@@ -11,7 +11,7 @@
         var xml =
             '<Browsers>\n' +
                 '\t<CoolBrowsers>\n' +
-                    '\t\t<Browser name="Opera" />\n' +
+                    '\t\t<Browser name="Opera">Something<Node /></Browser>\n' +
                     '\t\t<Browser name="Chrome" />\n' +
                     '\t\t<Browser name="Firefox" />\n' +
                 '\t</CoolBrowsers>\n' +
@@ -42,6 +42,7 @@
             uncoolBrowserNested.cdata("<strong>Foo2</strong>");
             // or just append plain text
             uncoolBrowserNested.append("Some plaintext");
+            $xml.find("Browser[name='Opera'], Browser[name='Chrome']").text("Some text");
             
             // Append new XML
             $xml.find("UncoolBrowsers").append(uncoolBrowser);
@@ -58,7 +59,7 @@
             $xml.find("Browser").first().before("<Test /><Test />");
             
 			// Removing
-			$xml.find("Browser[name='Opera']").remove();
+			$xml.find("Browser[name='Firefox']").remove();
             
             // Use .xml() to get the outer XML
             $("#result").text($xml.xml());   
