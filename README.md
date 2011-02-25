@@ -45,9 +45,11 @@ or use it on an element (`$yourXmlVar.find("child > grandchild").xml()`) to get 
 	
 	// Set
 	$.xml("string").find("child").cdata("some <strong>html</strong>")
+	// Or
+	$.xml("string").find("child").html("some <strong>html</strong>")
 
 Gets or sets the CDATA for an element. It will overwrite any existing CDATA. You can also use `.html()` as another way
-to get (but not set, although that'd be easy to implement!).
+to get or set the same way.
 
 # Known Issues #
 

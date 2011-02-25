@@ -143,11 +143,13 @@ $.xml = function (xml) {
     
     $$.fn.html = function () {
         // Redirect HTML w/ no args to .cdata()
-        if (!arguments[0]) {
+        if ($.find.isXML(this[0]) && !arguments[0]) {
             return this.cdata();
+        } else if ($.find.isXML(this[0]) && arguments[0]) {
+            return this.cdata(arguments[0]);
         } else {
-            return $.fn.html.apply(this, arguments);
-        }
+			return $.fn.html.apply(this, arguments);
+		}
     };
 	
 	$$.fn.xml = function () {
