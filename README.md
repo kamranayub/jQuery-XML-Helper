@@ -53,15 +53,16 @@ to get or set the same way.
 
 # Known Issues #
 
- - None
+ - FF 4 beta doesn't work
  
 # What Seems to Work #
 
  - Browsers
    - IE7, IE8, IE9
-   - FF 3.*
+   - FF 3.6
    - Chrome
    - Safari
+   - Opera
  - Methods
    - append, appendTo
    - before, insertBefore
